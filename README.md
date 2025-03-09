@@ -1,4 +1,4 @@
-# real-time-object-detection-with-automated-whatsapp-alerts-using-dl
+# Real-Time-Video-Object-Detection-Using-YOLO-and-Computer-Vision-with-Automated-WhatsApp-Alerts-for-Security-and-Surveillance.
 
 ### Real-Time Object Detection with automated whatsApp alerts using Twilio and deep learning... This project helps someone who owns a place and needs monitoring at the least cost.
 
