@@ -44,28 +44,25 @@ pip uninstall opencv-contrib-python
 pip install opencv-contrib-python  # If you're running this on a server without a GUI
 ```
 
-## For YOLO8
-The latest version of YOLO as of October 2023 is YOLOv8, developed by Ultralytics. YOLOv8 is more efficient, accurate, and easier to use than previous versions. It comes with a Python package called ultralytics that simplifies object detection tasks.
-```bash
-pip install ultralytics
-from ultralytics import YOLO
-```
+## For YOLO
+The efficient version of YOLO is YOLOv4, that simplifies object detection tasks.
+
 
 
 # NGROK
-* install ngrok somewhere
-* place ngrok.exe file somewhere , like "C:/"
-* go to environment variables, got to system variables, click on Path and click edit
+* Install ngrok from the web browser.
+* Place ngrok.exe file in a specific location , such as "C:/".
+* Go to environment variables, got to system variables, click on Path and set a new path variable there.
 * click new and add C:/ngrok.exe path
 
 # APACHE & XAMPP
 * start apache server using XAMPP
-* My port for apache is 8083
-* now go to ngrok.exe, cmd like thing will open
+* Notice the port for apache (like 8083)
+* Run ngrok.exe, and a terminal like interface will be shown.
 ```bash
 ngrok http 8083
 ```
-* run the command, you will see a link that is needed to give public url to our local files
+* run the command, There will be a link that is needed to give public url to our local files
 * copy that link and paste it in your code before running
 # GITHUB LFS
 https://docs.github.com/en/repositories/working-with-files/managing-large-files
@@ -85,8 +82,31 @@ git add yolo_files/yolov4.weights
 git lfs ls-files
 ```
 
-* X = '-A-Ca40ab86502b72a1ee2e3b5ef28195c53-'
-* Y = '-c-a3b32aa91b86d88a021915f72d8b1b9-'
+# Instructions:
+## Setup Environment:
+
+* Install the required Python libraries (see Requirements section).
+
+* Set up a MySQL database for face recognition data.
+
+* Configure Twilio for WhatsApp alerts.
+
+## Run the Project:
+
+* Execute the initiate.py script to start the system.
+
+* Provide the video path (or leave it empty to use the webcam).
+
+* The system will detect objects, recognize faces, and send alerts as configured.
+
+## Customization:
+
+* Modify the values.py file to update Twilio credentials and ngrok links.
+
+* Adjust the YOLO configuration and weights paths in the code if needed.
+
+* Customize the alert messages and emergency handling logic.
 
 
-https://www.makeareadme.com/
+
+

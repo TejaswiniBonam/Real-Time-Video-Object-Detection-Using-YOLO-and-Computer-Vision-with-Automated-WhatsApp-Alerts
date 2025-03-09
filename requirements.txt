@@ -1,0 +1,25 @@
+--Requirements--
+
+Hardware Requirements:
+
+1. Webcam or Camera: For real-time video input.
+2. Computer: A system with a decent CPU/GPU for running YOLO and OpenCV efficiently.
+
+Software Requirements:
+
+1. Python 3.7 or higher.
+
+Libraries:
+
+1. OpenCV (cv2)
+2. NumPy (numpy)
+3. Face Recognition (face_recognition)
+4. Twilio (twilio)
+5. MySQL Connector (mysql-connector-python)
+6. MySQL Database: For storing face recognition data.
+
+YOLO Files:
+
+1. YOLOv4 configuration file (yolov4.cfg)
+2. YOLOv4 weights file (yolov4.weights)
+3. COCO class names file (coco.names)
