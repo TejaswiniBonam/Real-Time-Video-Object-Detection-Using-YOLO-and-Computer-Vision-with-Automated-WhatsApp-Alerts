@@ -1,0 +1,6 @@
+yolo_files/coco.names filter=lfs diff=lfs merge=lfs -text
+yolo_files/yolov4.cfg filter=lfs diff=lfs merge=lfs -text
+yolo_files/yolov4.weights filter=lfs diff=lfs merge=lfs -text
+data/coco.names filter=lfs diff=lfs merge=lfs -text
+data/yolov4.cfg filter=lfs diff=lfs merge=lfs -text
+data/yolov4.weights filter=lfs diff=lfs merge=lfs -text
