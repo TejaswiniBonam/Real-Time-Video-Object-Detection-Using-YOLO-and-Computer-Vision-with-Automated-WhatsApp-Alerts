@@ -1,7 +1,10 @@
 from twilio.rest import Client
 from values import needed
+import time
+
 values=needed()
-def twilio_alert(X, Y, ngrok_link, name, alert_type,index, device_no, fm):
+
+def twilio_alert(X, Y, ngrok_link, name, alert_type, index, device_no, fm):
     #print(X, Y)
     client = Client(X, Y)
     face_details = "None"
@@ -9,13 +12,19 @@ def twilio_alert(X, Y, ngrok_link, name, alert_type,index, device_no, fm):
         face_details = "\n".join(fm)
 
     urls=['/screenshots/','/screen_recordings/', face_details]
-    devices = ['whatsapp:+918328044665', 'whatsapp:+919951280286']
+    devices = ['whatsapp:+918328044665', 'whatsapp:+919951280286', 'whatsapp:+919951280286', 'whatsapp:+918328044665']
     url = ngrok_link + urls[index] + name
     if alert_type==3:
         url = face_details
-    print(url)
-    print(name)
-    alert = ["We found someone roaming at your place, face recognition details will be updated soon", "🔴EMERGENCY AT House No 123 Main Street, Anytown, CA 12345🔴", "This is the screen recording.", "Face recognition details"]
+    if alert_type==4:
+        url=''
+    #print(url)
+    #print(name)
+    alert = ["We found someone roaming at your place, Please reply with 'yes' if there is a need for emergency act or else 'no' ",
+              "🔴EMERGENCY AT House No 123 Main Street, Anytown, CA 12345🔴", 
+              "This is the screen recording.",
+              "Face recognition details",
+              "Oh it's you!! Dont worry we are still On guard and watching everything."]
     message = client.messages.create(
     from_='whatsapp:+14155238886',
     to=devices[device_no],
@@ -27,23 +36,24 @@ def twilio_alert(X, Y, ngrok_link, name, alert_type,index, device_no, fm):
 
 
 
-
-import time
-
 def user_reply(X, Y):
     client = Client(X, Y)
     time.sleep(3)
     
     last_message = client.messages.list(to='whatsapp:+918328044665', limit=1)
+    print(last_message[0].body)
+
     
     if not last_message: 
-        return None
+        return "-"
     
     text = last_message[0].body.strip().lower()    
-    if "yes" in text:
+    if "yes" in text[10:13]:
         return "yes"
         twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], 0, 2)  
-    elif "no" in text:
+    elif "no" in text[10:12]:
         return "no"
     
-    return None
+    return "-"
+
+#print(user_reply(values['device1_x'], values['device1_y']))

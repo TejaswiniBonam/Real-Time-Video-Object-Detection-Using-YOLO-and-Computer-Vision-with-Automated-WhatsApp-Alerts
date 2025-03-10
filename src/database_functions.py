@@ -3,6 +3,7 @@ import mysql.connector
 import json
 import numpy as np
 
+#print("Before")
 conn = mysql.connector.connect(
     host="localhost",
     user="root",      
@@ -10,7 +11,7 @@ conn = mysql.connector.connect(
     database="face_recognition_db"
 )
 cursor = conn.cursor()
-
+#print("After")
 
 def get_all_faces_from_db():
     cursor.execute("SELECT * FROM faces")

@@ -12,6 +12,8 @@ import json
 import numpy as np
 from database_functions import get_all_faces_from_db, find_matching_face, register_new_face
 
+
+
 # Paths to YOLO configuration, weights, and classes files
 yolo_cfg = 'C:/Users/brlte/OneDrive/Desktop/Ultimate/yolo_files/yolov4.cfg'  # Path to YOLO configuration file
 yolo_weights = 'C:/Users/brlte/OneDrive/Desktop/Ultimate/yolo_files/yolov4.weights'  # Path to YOLO weights file
@@ -35,7 +37,6 @@ if video_path:
 else:
     cap = cv2.VideoCapture(0)  # Open webcam
 
-
 if not cap.isOpened():
     print("Error: Unable to access the webcam.")
     exit()
@@ -49,11 +50,15 @@ last_human_detected_time = None
 owner_alert = 0
 emergency = 0
 face_recognition_details = ""
+owner_presence = 0
 fm = set()
 
 screenrecord_dir = "C:/xampp/htdocs/screen_recordings"
 if not os.path.exists(screenrecord_dir):
     os.makedirs(screenrecord_dir)
+
+last_alert_time = None
+response_tracker = {'device1': "-", 'device2': "-", 'device3': "-"}
 
 while True:
     ret, frame = cap.read()
@@ -102,12 +107,14 @@ while True:
 
             if class_names[class_ids[i]].lower() == "person":
                 human_detected = True
+                last_human_detected_time = time.time()
+                if recording:
+                    break
                 color = (0, 0, 255)
 
                 if not screenshot_taken:
                     screenshot_taken = save_screenshot(frame)
-                    twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], screenshot_taken, 0, 0, 0, None)
-                    owner_alert = 1
+                    
 
                 if not recording:
                     recording = True
@@ -117,36 +124,31 @@ while True:
                     video_writer = cv2.VideoWriter(filename, fourcc, 10, (width, height))
                     print(f"Recording started: {filename}")
 
-                last_human_detected_time = time.time()
+                break
+                
+    
+    if screenshot_taken and owner_alert==0:
+        twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], screenshot_taken, 0, 0, 0, None)
+        twilio_alert(values['device2_x'], values['device2_y'], values['ngrok_link'], screenshot_taken, 0, 0, 1, None)
+        twilio_alert(values['device3_x'], values['device3_y'], values['ngrok_link'], screenshot_taken, 0, 0, 2, None)
+        print("ALERTS SENT 1")
+        owner_alert = 1
+        last_alert_time = time.time()
 
-                # User response handling logic from the first code
-                start_time = time.time()
-                alert_sent_time = start_time
-                user_response = None
-                while emergency!=1:
-                    # Check for user reply
-                    user_response = user_reply(values['device1_x'], values['device1_y'])
-                    if user_response:
-                        print(f"User response received: {user_response}")
-                        if user_response=="yes":
-                            twilio_alert(values['emg_x'], values['emg_y'], values['ngrok_link'], screenshot_taken, 1, 0, 1, None)
-                            emergency = 1
-                            break
+    start_time = time.time()
+    device1_response = user_reply(values['device1_x'], values['device1_y'])
+    device2_response = user_reply(values['device2_x'], values['device2_y'])
+    device3_response = user_reply(values['device3_x'], values['device3_y'])
+    response_tracker['device1'] = device1_response
+    response_tracker['device2'] = device2_response
+    response_tracker['device3'] = device3_response
 
+    if emergency == 0 and (device1_response=="yes" or device2_response=="yes" or device3_response=="yes"):
+        twilio_alert(values['emg_x'], values['emg_y'], values['ngrok_link'], screenshot_taken, 1, 0, 3, None)
+        print("EMERGENCY ALERT 1")
+        print(response_tracker)
+        emergency = 1
 
-                    # Check if 15 seconds have passed
-                    if time.time() - alert_sent_time >= 15:
-                        print("No response received. Resending alert...")
-                        twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], screenshot_taken, 0, 0, 0, None)
-                        alert_sent_time = time.time()  # Reset the alert sent time
-
-                    # Check if 1 minute has passed
-                    if time.time() - start_time >= 60:
-                        twilio_alert(values['emg_x'], values['emg_y'], values['ngrok_link'], screenshot_taken, 1, 0, 1, None)
-                        emergency = 1
-                        #exit()
-
-                    time.sleep(1)  # Sleep for a short duration to avoid busy waiting
     if face_locations:
         print("No faces detected.")
         face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
@@ -157,11 +159,12 @@ while True:
             if match:
                 reco_name = match[1]
                 print(f"Recognized: {reco_name}")
-                
-                top, right, bottom, left = face_location
-                top, right, bottom, left = [v * 2 for v in [top, right, bottom, left]]  # Scale back up
-                cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
-                cv2.putText(frame, reco_name, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                if owner_presence ==0 and reco_name=="User _1":
+                    twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], screenshot_taken, 4, 0, 0, None)
+                    twilio_alert(values['device2_x'], values['device2_y'], values['ngrok_link'], screenshot_taken, 4, 0, 1, None)
+                    twilio_alert(values['device3_x'], values['device3_y'], values['ngrok_link'], screenshot_taken, 4, 0, 2, None)
+                    print("OWNER RECOGNISING ALERT ")
+                    owner_presence=1
             else:
                 print("New face detected. Auto-registering...")
                 new_name = f"Person _{len(get_all_faces_from_db()) + 1}"
@@ -176,18 +179,37 @@ while True:
     else:
         if recording and last_human_detected_time and (time.time() - last_human_detected_time > 5):
             recording = False
+            owner_presence = 0
             if video_writer:
                 name = os.path.basename(filename) 
                 video_writer.release()
                 print(f"Recording stopped and saved: {filename}")
                 twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], name, 2, 1, 0, None)
                 twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], name, 3, 2, 0, fm)
+                twilio_alert(values['device2_x'], values['device2_y'], values['ngrok_link'], name, 2, 1, 1, None)
+                twilio_alert(values['device2_x'], values['device2_y'], values['ngrok_link'], name, 3, 2, 1, fm)
+                twilio_alert(values['device3_x'], values['device3_y'], values['ngrok_link'], name, 2, 1, 2, None)
+                twilio_alert(values['device3_x'], values['device3_y'], values['ngrok_link'], name, 3, 2, 2, fm)
+                print("screen record and face alerts sent")
                 if emergency==1:
-                    twilio_alert(values['emg_x'], values['emg_y'], values['ngrok_link'], name, 2, 1, 1, None)
+                    twilio_alert(values['emg_x'], values['emg_y'], values['ngrok_link'], name, 2, 1, 3, None)
+                    print("screen reco alert emergency")
+                    emergency = 0
                 video_writer = None
                 fm.clear()
-    
 
+    if last_alert_time and (time.time() - last_alert_time > 600):  # 600 seconds = 10 minutes
+        if not (device1_response=="yes" or device2_response=="yes" or device3_response=="yes"):  # If no response from any device
+            twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], screenshot_taken, 0, 0, 0, None)
+            twilio_alert(values['device2_x'], values['device2_y'], values['ngrok_link'], screenshot_taken, 0, 0, 1, None)
+            twilio_alert(values['device3_x'], values['device3_y'], values['ngrok_link'], screenshot_taken, 0, 0, 2, None)
+            print("ALERTS SENT 2")
+            last_alert_time = time.time()
+
+    # Do not send emergency alert if all devices replied with "no"
+    if all(response == "no" for response in response_tracker.values()):
+        emergency = 0
+    
     if recording and video_writer:
         video_writer.write(frame)
 
