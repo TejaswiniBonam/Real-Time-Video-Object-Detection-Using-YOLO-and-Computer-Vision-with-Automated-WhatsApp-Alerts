@@ -1,69 +1,120 @@
 # Real-Time-Video-Object-Detection-Using-YOLO-and-Computer-Vision-with-Automated-WhatsApp-Alerts-for-Security-and-Surveillance.
 
-### Real-Time Object Detection with automated whatsApp alerts using Twilio and deep learning... This project helps someone who owns a place and needs monitoring at the least cost.
 
 ### Abstract:
 The Human Detection and WhatsApp Alert System is an AI-driven security solution that utilizes YOLO (You Only Look Once) object detection to identify human presence in real-time. The system captures live video from a webcam, detects humans, and upon detection, takes a screenshot and sends an automated WhatsApp alert via Twilio API.
 
-## Required things
-* **Python** - for overall project script.
-* **Computer Vision** - for webcam management, screenshots, recording, saving the media.
-* **YOLO (YOU ONLY LOOK ONCE)** - for object detection.
-* **Deep Learning** - for yolo.
-* **Twilio** - for sending alerts through WhatsApp.
-* **Pywhatkit** - for sending alerts through WhatsApp.
-* **ngrok** - for giving public URLs to the local media files.
-* **apache server** - for giving public URLs to the local media files.
-* **shutil** - for moving files, it says shutil  package is already in python so we can just directly import in the code without installing
+## Key Features
+### Real-Time Human Detection:
+
+* Uses YOLOv4 to detect humans in real-time from a webcam or video feed.
+* Captures screenshots and records video when a human is detected.
+
+### Face Recognition:
+
+* Recognizes known faces using the face_recognition library.
+* Auto-registers new faces and stores their encodings in a MySQL database.
+
+### Alert System:
+
+* Sends WhatsApp alerts to multiple devices using Twilio.
+* Provides options for emergency alerts and user responses (e.g., "yes" or "no").
+
+### Local Server Hosting:
+
+* Uses XAMPP to host screenshots and screen recordings locally.
+* Ngrok is used to expose the local server to the internet for remote access.
+
+### Database Integration:
+
+* Stores face encodings and metadata in a MySQL database.
+* Supports querying and matching faces in real-time.
+
+### User Interaction:
+
+* Allows users to respond to alerts via WhatsApp.
+* Tracks user responses and triggers emergency alerts if necessary.
+
+## Tools and Technologies Used
+### YOLOv4:
+A state-of-the-art object detection model used for detecting humans in the video feed.
+
+### OpenCV:
+Used for image processing, video capture, and displaying the live feed.
+
+### face_recognition Library:
+A Python library for face detection and recognition.
+
+### Twilio:
+A cloud communications platform used for sending WhatsApp alerts.
+
+### Ngrok:
+A tool to expose local servers to the internet, allowing remote access to screenshots and recordings.
+
+### XAMPP:
+A local server solution used to host screenshots and recordings.
+
+### MySQL Workbench:
+A database management tool used to store and manage face encodings and metadata.
+
+### shutil
+for moving files, it says shutil  package is already in python so we can just directly import in the code without installing
+
+### Python:
+The primary programming language used for the entire project.
 
 
-## Installation
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-### Python
-* **Role:** Python is the primary programming language used to write the entire script. It acts as the backbone of the project, integrating all the components and libraries.
-* **Usage:** Python is used for:
-      Webcam management (using OpenCV),
-      Object detection (using YOLO),
-      Sending WhatsApp alerts (using Twilio),
-      File management (using shutil), and
-      Executing additional scripts (e.g., Emergency_act.py).
 
+
+## How to Set Up and Run the Project
+
+-------------------------------------------------------------------
+
+### Installations
+
+#### Install the required dependencies through the following commands
 ```bash
 python --version
+pip install 
 ```
-It says Pythob 3.13.0 for me
+
 ```bash
- pip install 
+pip install opencv-python 
+pip install face_recognition 
+pip install twilio 
+pip install mysql-connector-python 
+pip install numpy
 ```
+
+### Set Up XAMPP
+* Install XAMPP and start the Apache server.
+* Create directories screenshots and screen_recordings in C:/xampp/htdocs/.
+
+### Set Up MySQL Database
+* Create a database named face_recognition_db.
+* Create a table faces with columns: id, name, and face_encoding.
+
+### Configure Ngrok
+* Download and install Ngrok.
+* Run Ngrok to expose the local server
 ```bash
-pip install opencv-python
-pip install opencv-python-headless
-pip uninstall opencv-contrib-python
-pip install opencv-contrib-python  # If you're running this on a server without a GUI
+ngrok http 80
 ```
+* Use the Ngrok URL in the values.py file.
 
-## For YOLO
-The efficient version of YOLO is YOLOv4, that simplifies object detection tasks.
+### Configure Twilio
+* Create a Twilio account and get the X and Y values (API keys).
+* Update the values.py file with Twilio credentials.
 
-
-
-# NGROK
-* Install ngrok from the web browser.
-* Place ngrok.exe file in a specific location , such as "C:/".
-* Go to environment variables, got to system variables, click on Path and set a new path variable there.
-* click new and add C:/ngrok.exe path
-
-# APACHE & XAMPP
-* start apache server using XAMPP
-* Notice the port for apache (like 8083)
-* Run ngrok.exe, and a terminal like interface will be shown.
+### Run the Project
+* Execute the initiate.py script to start the system
 ```bash
-ngrok http 8083
+python initiate.py
 ```
-* run the command, There will be a link that is needed to give public url to our local files
-* copy that link and paste it in your code before running
+* Provide the video path (or leave it empty to use the webcam).
+
 # GITHUB LFS
 https://docs.github.com/en/repositories/working-with-files/managing-large-files
 For object detection, we need yolo files, we can access them online, but having offline files makes the process easier aqnd faster.. AND Normal way doesn't support GITHUB storage, as they are kinda large files, so we need to use "GITHUB LFS (LARGE FILE STORAGE)" for storing these yolo files.
