@@ -13,7 +13,6 @@ import numpy as np
 from database_functions import get_all_faces_from_db, find_matching_face, register_new_face
 
 
-
 # Paths to YOLO configuration, weights, and classes files
 yolo_cfg = 'C:/Users/brlte/OneDrive/Desktop/Ultimate/yolo_files/yolov4.cfg'  # Path to YOLO configuration file
 yolo_weights = 'C:/Users/brlte/OneDrive/Desktop/Ultimate/yolo_files/yolov4.weights'  # Path to YOLO weights file
@@ -114,8 +113,6 @@ while True:
 
                 if not screenshot_taken:
                     screenshot_taken = save_screenshot(frame)
-                    
-
                 if not recording:
                     recording = True
                     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -123,9 +120,7 @@ while True:
                     fourcc = cv2.VideoWriter_fourcc(*'H264')
                     video_writer = cv2.VideoWriter(filename, fourcc, 10, (width, height))
                     print(f"Recording started: {filename}")
-
-                break
-                
+                break           
     
     if screenshot_taken and owner_alert==0:
         twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], screenshot_taken, 0, 0, 0, None)
@@ -136,9 +131,9 @@ while True:
         last_alert_time = time.time()
 
     start_time = time.time()
-    device1_response = user_reply(values['device1_x'], values['device1_y'])
-    device2_response = user_reply(values['device2_x'], values['device2_y'])
-    device3_response = user_reply(values['device3_x'], values['device3_y'])
+    device1_response = user_reply(values['device1_x'], values['device1_y'], 0)
+    device2_response = user_reply(values['device2_x'], values['device2_y'], 1)
+    device3_response = user_reply(values['device3_x'], values['device3_y'], 2)
     response_tracker['device1'] = device1_response
     response_tracker['device2'] = device2_response
     response_tracker['device3'] = device3_response
@@ -146,25 +141,25 @@ while True:
     if emergency == 0 and (device1_response=="yes" or device2_response=="yes" or device3_response=="yes"):
         twilio_alert(values['emg_x'], values['emg_y'], values['ngrok_link'], screenshot_taken, 1, 0, 3, None)
         print("EMERGENCY ALERT 1")
-        print(response_tracker)
+        #print(response_tracker)
         emergency = 1
 
     if face_locations:
-        print("No faces detected.")
+        #print("No faces detected.")
         face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
-        print(f"Image shape: {rgb_frame.shape}, dtype: {rgb_frame.dtype}")
-        print(f"Face locations: {face_locations}")
+        #print(f"Image shape: {rgb_frame.shape}, dtype: {rgb_frame.dtype}")
+        #print(f"Face locations: {face_locations}")
         for face_encoding, face_location in zip(face_encodings, face_locations):
             match = find_matching_face(face_encoding)
             if match:
                 reco_name = match[1]
                 print(f"Recognized: {reco_name}")
-                if owner_presence ==0 and reco_name=="User _1":
+                if owner_presence == 0 and reco_name=="User _11":
                     twilio_alert(values['device1_x'], values['device1_y'], values['ngrok_link'], screenshot_taken, 4, 0, 0, None)
                     twilio_alert(values['device2_x'], values['device2_y'], values['ngrok_link'], screenshot_taken, 4, 0, 1, None)
                     twilio_alert(values['device3_x'], values['device3_y'], values['ngrok_link'], screenshot_taken, 4, 0, 2, None)
                     print("OWNER RECOGNISING ALERT ")
-                    owner_presence=1
+                    owner_presence = 1
             else:
                 print("New face detected. Auto-registering...")
                 new_name = f"Person _{len(get_all_faces_from_db()) + 1}"

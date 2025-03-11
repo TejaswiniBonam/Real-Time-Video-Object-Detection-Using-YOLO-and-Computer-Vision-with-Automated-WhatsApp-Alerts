@@ -3,6 +3,7 @@ from values import needed
 import time
 
 values=needed()
+devices = ['whatsapp:+918328044665', 'whatsapp:+919951280286', 'whatsapp:+919951280286', 'whatsapp:+919951280286']
 
 def twilio_alert(X, Y, ngrok_link, name, alert_type, index, device_no, fm):
     #print(X, Y)
@@ -12,7 +13,7 @@ def twilio_alert(X, Y, ngrok_link, name, alert_type, index, device_no, fm):
         face_details = "\n".join(fm)
 
     urls=['/screenshots/','/screen_recordings/', face_details]
-    devices = ['whatsapp:+918328044665', 'whatsapp:+919951280286', 'whatsapp:+919951280286', 'whatsapp:+918328044665']
+    
     url = ngrok_link + urls[index] + name
     if alert_type==3:
         url = face_details
@@ -32,16 +33,16 @@ def twilio_alert(X, Y, ngrok_link, name, alert_type, index, device_no, fm):
     #media_url= ngrok_link + '/screenshots/' + name
     body = alert[alert_type] + "\n\n" + url,
     )
-    print(message.sid)
+    print("Message sid: ", message.sid)
 
 
 
-def user_reply(X, Y):
+def user_reply(X, Y, device_no):
     client = Client(X, Y)
     time.sleep(3)
     
-    last_message = client.messages.list(to='whatsapp:+918328044665', limit=1)
-    print(last_message[0].body)
+    last_message = client.messages.list(to=devices[device_no], limit=1)
+    #print(last_message[0].body)
 
     
     if not last_message: 
