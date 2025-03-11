@@ -3,7 +3,7 @@ from values import needed
 import time
 
 values=needed()
-devices = ['whatsapp:+918328044665', 'whatsapp:+919951280286', 'whatsapp:+919951280286', 'whatsapp:+919951280286']
+devices = ['whatsapp:+918328044665', 'whatsapp:+919398798623', 'whatsapp:+919951280286', 'whatsapp:+917981087169']
 
 def twilio_alert(X, Y, ngrok_link, name, alert_type, index, device_no, fm):
     #print(X, Y)
